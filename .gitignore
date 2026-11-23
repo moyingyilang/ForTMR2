@@ -1,0 +1,9 @@
+bin/
+lib/build/
+lib/*.a
+native/target/
+vulkan-layer/build/
+vulkan-layer/build-android/
+*.o
+*.so
+*.a

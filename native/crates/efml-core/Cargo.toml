@@ -1,0 +1,23 @@
+[package]
+name = "efml-core"
+description = "EFML4A 核心领域模型：mod 清单、与后端无关的 IR、draw call 识别策略、包校验"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+thiserror.workspace = true
+sha2.workspace = true
+semver.workspace = true
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }

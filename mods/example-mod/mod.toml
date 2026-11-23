@@ -1,0 +1,143 @@
+# EFML4A 参考 mod 包
+#
+# 目的：把 docs/10-mod-format.md 里定义的**每一个** IR 段落都实际用一遍，
+#       作为格式的活文档与校验器的回归样本。
+#
+# ⚠️ 本包内所有数据文件都是**合成占位内容**（全零或递增值），
+#    不含任何来自游戏的资源，仅用于验证「解析 → 校验 → 加载」链路。
+
+format_version = 1
+id = "example-angel-body"
+name = "示例：Angel Body 模型替换"
+version = "0.1.0"
+authors = ["EFML4A contributors"]
+license = "AGPL-3.0-or-later"
+description = "格式规范的参考 mod 包。数据为合成占位内容，不含游戏资源，仅用于验证加载与校验链路。"
+backends = ["vulkan-layer", "il2cpp-hook", "asset-bundle"]
+min_loader_version = "0.1.0"
+
+[target]
+game = "arknights-endfield"
+game_version = ">=1.0.0"
+abi = "arm64-v8a"
+
+# ─────────────────────────────────────────────────────────────
+# 网格替换 —— 对应 EFMI 的 `ib=` / `vb0..vb2=` 资源覆盖
+# 识别方式用「流水线指纹」，这是 Vulkan 层后端的主要手段，
+# 语义上最接近 PC 上 3DMigoto 对 shader/pipeline 的哈希识别。
+# ─────────────────────────────────────────────────────────────
+[[mesh.replace]]
+vertex_count = 3
+source = "mesh/body.vertex.bin"
+hot_reload = true
+
+[mesh.replace.identify]
+kind = "pipeline-hash"
+hash = "a1b2c3d4e5f60718"
+
+# 顶点布局：与 EFMI Tools 导出的 Components.buf 语义清单等价
+# （见 docs/13-real-mod-analysis.md §13.3 的一手证据）。
+# 这里的 stride 是**各语义 stride 之和**，不是单个属性的宽度。
+[mesh.replace.vertex_layout]
+stride = 40
+
+[[mesh.replace.vertex_layout.attributes]]
+semantic = "POSITION"
+format = "R32G32B32_SFLOAT"
+offset = 0
+location = 0
+
+[[mesh.replace.vertex_layout.attributes]]
+semantic = "NORMAL"
+format = "R32G32B32_SFLOAT"
+offset = 12
+location = 1
+
+[[mesh.replace.vertex_layout.attributes]]
+semantic = "TEXCOORD0"
+format = "R32G32_SFLOAT"
+offset = 24
+location = 2
+
+[[mesh.replace.vertex_layout.attributes]]
+semantic = "BLENDINDICES"
+format = "R8G8B8A8_UINT"
+offset = 32
+location = 3
+
+[[mesh.replace.vertex_layout.attributes]]
+semantic = "BLENDWEIGHTS"
+format = "R8G8B8A8_UNORM"
+offset = 36
+location = 4
+
+[[mesh.replace.submeshes]]
+index_count = 3
+index_format = "u16"
+source = "mesh/body.index.bin"
+topology = "triangle-list"
+
+# ─────────────────────────────────────────────────────────────
+# 骨骼映射 —— 对应 EFMI 的 MergedSkeleton
+# 识别方式用 Unity 对象路径，这是 IL2CPP 后端的手段。
+# ─────────────────────────────────────────────────────────────
+[[skeleton.map]]
+bone_count = 2
+bindposes = "mesh/body.bindposes.bin"
+
+[skeleton.map.identify]
+kind = "unity-path"
+path = "Assets/Characters/Angel/Model/Angel_Body"
+
+[[skeleton.map.map]]
+slot = 0
+name = "Root"
+
+[[skeleton.map.map]]
+slot = 1
+name = "Spine"
+
+# ─────────────────────────────────────────────────────────────
+# 形态键 —— 对应 EFMI 的 ShapeKeys
+# 识别方式用顶点签名（布局特征），比流水线指纹宽松、更适合跨版本复用，
+# 代价是误命中率更高，因此规范允许把多种识别策略串成回退链。
+# ─────────────────────────────────────────────────────────────
+[[blendshape]]
+name = "smile"
+frame_count = 1
+source = "mesh/face.smile.bin"
+default_weight = 0.0
+
+[blendshape.identify]
+kind = "vertex-signature"
+stride = 40
+attributes = ["POSITION", "NORMAL", "TEXCOORD0", "BLENDINDICES", "BLENDWEIGHTS"]
+
+# ─────────────────────────────────────────────────────────────
+# 材质覆盖 —— 对应 EFMI 中通过 RabbitFx 框架转交的材质参数
+# ─────────────────────────────────────────────────────────────
+[[material.override]]
+shader = "Endfield/Character/Body"
+
+[material.override.identify]
+kind = "pipeline-hash"
+hash = "1122334455667788"
+
+[[material.override.textures]]
+slot = "_MainTex"
+source = "texture/body_diffuse.bin"
+
+# ─────────────────────────────────────────────────────────────
+# 贴图替换 —— 对应 EFMI 的 `[TextureOverride_TextureN]` + `this = ref`
+# 识别方式用资源路径，这是 AssetBundle 后端的手段。
+#
+# 注意：docs/13 §13.6 指出 EFMI 还会区分 sRGB / Linear 色彩空间。
+# 当前格式只有 `format`，色彩空间字段是待补的设计缺口（见 §13.9 C-6）。
+# ─────────────────────────────────────────────────────────────
+[[texture.replace]]
+source = "texture/body_diffuse.bin"
+format = "RGBA8_UNORM"
+
+[texture.replace.identify]
+kind = "asset-path"
+path = "assets/characters/angel/body_diffuse"

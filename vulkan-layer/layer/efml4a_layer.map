@@ -1,0 +1,37 @@
+# ============================================================================
+# EFML4A 层导出符号白名单（linker version script）
+# ============================================================================
+# 为什么需要它：
+#   为了不依赖 libc++_shared.so（见 CMakeLists.txt 里 AOSP 关于
+#   "They can't safely use libc++_shared" 的说明），我们把 libc++ 静态链进了层。
+#   但静态库里的符号默认是 default visibility，`-fvisibility=hidden` 管不到它们，
+#   于是层会导出几百个 std::__ndk1::* 符号 —— 这会把 libc++ 的符号注入宿主进程，
+#   如果目标 app 自己也用 libc++_shared，可能发生符号插入（interposition）冲突。
+#   所以这里用白名单**只导出**层的 ABI 入口，其余全部 local。
+#
+# 这份清单必须与 README「导出的符号」一节以及 tests/smoke_host.cpp 的断言一致。
+# ============================================================================
+{
+  global:
+    # 桌面 / Khronos loader 的协商入口
+    vkNegotiateLoaderLayerInterfaceVersion;
+
+    # 协商后交给 loader，以及 Android loader 用 dlsym 直接查找的入口
+    vkGetInstanceProcAddr;
+    vkGetDeviceProcAddr;
+
+    # Android loader 的「自省」入口
+    # （必须导出，否则 Android 上既发现不了本层，也不会把它当成 global 层）
+    vkEnumerateInstanceLayerProperties;
+    vkEnumerateInstanceExtensionProperties;
+    vkEnumerateDeviceLayerProperties;
+
+    # 带 EFML4A_ 前缀的等价入口 + 统计计数导出
+    EFML4A_GetInstanceProcAddr;
+    EFML4A_GetDeviceProcAddr;
+    EFML4A_GetPhysicalDeviceProcAddr;
+    EFML4A_GetStatsJson;
+
+  local:
+    *;
+};

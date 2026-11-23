@@ -1,0 +1,6 @@
+# 由 `efml checksum --write` 生成
+471fb943aa23c511f6f72f8d1652d9c880cfa392ad80503120547703e56a2be5  mesh/body.bindposes.bin
+17e88db187afd62c16e5debf3e6527cd006bc012bc90b51a810cd80c2d511f43  mesh/body.index.bin
+f52b23db1fbb6ded89ef42a23ce0c8922c45f25c50b568a93bf1c075420bbb7c  mesh/body.vertex.bin
+5d7e2d9b1dcbc85e7c890036a2cf2f9fe7b66554f2df08cec6aa9c0a25c99c21  mesh/face.smile.bin
+fdeab9acf3710362bd2658cdc9a29e8f9c757fcf9811603a8c447cd1d9151108  texture/body_diffuse.bin

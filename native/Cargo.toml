@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/efml-core",
+    "crates/efml-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/moyingyilang/ForTMR2"
+authors = ["EFML4A contributors"]
+
+[workspace.dependencies]
+efml-core = { path = "crates/efml-core", version = "0.1.0" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "1"
+thiserror = "2"
+anyhow = "1"
+sha2 = "0.10"
+semver = "1"
+
+clap = { version = "4", features = ["derive"] }
+ratatui = "0.30"
+
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "debuginfo"
+
+[profile.dev]
+debug = 1
