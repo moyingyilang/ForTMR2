@@ -1,6 +1,8 @@
-# 语言政策：CRC（C / Rust / C++）
+# 语言政策：CRX（C / Rust / C++）
 
-**C 写主链路，Rust 写叶子库，C++ 写宿主/复杂模块；禁止 Python / JavaScript 实现。**
+**C 写主链路，Rust 写叶子，C++ 写宿主/复杂模块；禁止 Python / JavaScript 实现。**
+
+> 以前叫 CRC，和循环冗余校验 CRC32/CRC32C 重名，现统一为 **CRX**。
 
 | 语言 | 位置 | 规则 |
 |---|---|---|
@@ -10,7 +12,7 @@
 | C# / .NET | 只读参考代码 | 不参与构建，不新增实现 |
 | Python / JS / TS | 禁止 | 仅文档/构建脚本可用 shell |
 
-## CRC 的边界
+## CRX 的边界
 
 **C 是主干**：VFS、热重载、注入、CLI dispatch、资源生命周期、游戏结构体。
 这些路径要求可预测的延迟、无 panic、无隐藏分配。
