@@ -39,7 +39,7 @@ cmake -S vulkan-layer -B vulkan-layer/build && cmake --build vulkan-layer/build
 **包含**：
 
 - mod 格式、资源抽象、加载器框架、渲染层、示例
-- 与 BEN 的格式桥接：[Converter4BENExt](https://github.com/moyingyilang/Converter4BENExt)
+- 与 BEN 的格式桥接：[Converter4BENeXt](https://github.com/moyingyilang/Converter4BENeXt)
 
 ## 许可
 
